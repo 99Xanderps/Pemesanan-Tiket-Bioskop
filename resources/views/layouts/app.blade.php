@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'Bioskopku')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ asset('css/theme.css') }}" rel="stylesheet">
+    @vite(['resources/css/app.css'])
 </head>
 <body>
 
@@ -25,11 +25,18 @@
                 <path d="M3 19a2 2 0 0 0 2 2h1v-8H3z"/>
             </svg>
         </div>
-        <div class="icon-btn">
+        <a href="{{ auth()->check() ? route('logout') : route('login') }}"
+           @if(auth()->check()) onclick="event.preventDefault(); document.getElementById('logout-form').submit();" @endif
+           class="icon-btn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>
             </svg>
-        </div>
+        </a>
+        @auth
+            <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display:none;">
+                @csrf
+            </form>
+        @endauth
     </div>
 
     {{-- LOCATION BAR --}}
@@ -68,13 +75,14 @@
             </svg>
             Beranda
         </a>
-        <a href="#" class="nav-item {{ request()->routeIs('movies.show') ? 'active' : '' }}">
+        <a href="{{ route('movies.index') }}" class="nav-item {{ request()->routeIs('movies.show') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 4v5"/>
             </svg>
             Bioskop
         </a>
-        <a href="#" class="nav-item {{ request()->routeIs('booking.*') ? 'active' : '' }}">
+        {{-- Belum ada route daftar tiket-saya, sementara arahkan ke login/beranda --}}
+        <a href="{{ auth()->check() ? route('movies.index') : route('login') }}" class="nav-item {{ request()->routeIs('booking.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z"/>
             </svg>
@@ -85,5 +93,37 @@
 </div>
 
 @yield('scripts')
+
+<script>
+// Supaya .movie-scroller bisa di-drag pakai mouse di desktop
+// (di HP asli tetap bisa swipe normal tanpa script ini)
+document.querySelectorAll('.movie-scroller').forEach(function (scroller) {
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    scroller.addEventListener('mousedown', function (e) {
+        isDown = true;
+        scroller.classList.add('dragging');
+        startX = e.pageX - scroller.offsetLeft;
+        scrollLeft = scroller.scrollLeft;
+    });
+
+    ['mouseleave', 'mouseup'].forEach(function (evt) {
+        scroller.addEventListener(evt, function () {
+            isDown = false;
+            scroller.classList.remove('dragging');
+        });
+    });
+
+    scroller.addEventListener('mousemove', function (e) {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - scroller.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        scroller.scrollLeft = scrollLeft - walk;
+    });
+});
+</script>
 </body>
 </html>

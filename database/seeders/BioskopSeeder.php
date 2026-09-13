@@ -11,9 +11,13 @@ class BioskopSeeder extends Seeder
 {
     public function run(): void
     {
-        $cinema1 = Cinema::create(['name' => 'XXI BG Junction', 'city' => 'Surabaya', 'studio' => 'Studio 1']);
-        $cinema2 = Cinema::create(['name' => 'CGV Ciputra World', 'city' => 'Surabaya', 'studio' => 'Studio Premiere']);
+        // ---------- Bioskop ----------
+        $cinema1 = Cinema::create(['name' => 'XXI BG Junction',     'city' => 'Surabaya', 'studio' => 'Studio 1']);
+        $cinema2 = Cinema::create(['name' => 'CGV Ciputra World',   'city' => 'Surabaya', 'studio' => 'Studio Premiere']);
+        $cinema3 = Cinema::create(['name' => 'Cinepolis Marvell City', 'city' => 'Surabaya', 'studio' => 'Studio VIP']);
+        $cinema4 = Cinema::create(['name' => 'FLIX Grand City',     'city' => 'Surabaya', 'studio' => 'Studio 3']);
 
+        // ---------- Film yang SEDANG TAYANG (punya jadwal) ----------
         $movie1 = Movie::create([
             'title'    => 'Munafik',
             'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Munafik',
@@ -33,7 +37,7 @@ class BioskopSeeder extends Seeder
         ]);
 
         foreach ([$movie1, $movie2] as $movie) {
-            foreach ([$cinema1, $cinema2] as $cinema) {
+            foreach ([$cinema1, $cinema2, $cinema3, $cinema4] as $cinema) {
                 Showtime::create([
                     'movie_id'  => $movie->id,
                     'cinema_id' => $cinema->id,
@@ -50,5 +54,24 @@ class BioskopSeeder extends Seeder
                 ]);
             }
         }
+
+        // ---------- Film yang AKAN TAYANG (sengaja belum punya jadwal) ----------
+        Movie::create([
+            'title'    => 'Gelombang Cherry',
+            'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Gelombang+Cherry',
+            'genre'    => 'Drama, Musikal',
+            'duration' => 110,
+            'synopsis' => 'Seorang musisi jalanan berjuang meraih mimpinya di tengah gemerlap kota pesisir.',
+            'rating'   => 'R13',
+        ]);
+
+        Movie::create([
+            'title'    => 'Musim',
+            'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Musim',
+            'genre'    => 'Drama, Keluarga',
+            'duration' => 102,
+            'synopsis' => 'Empat cerita dari empat musim berbeda dalam kehidupan satu keluarga besar.',
+            'rating'   => 'SU',
+        ]);
     }
 }

@@ -4,6 +4,8 @@
 
 @section('content')
 
+@vite(['resources/css/app.css'])
+
     <div class="section" style="padding-top:16px;">
 
         <div class="panel" style="margin-bottom:16px;">

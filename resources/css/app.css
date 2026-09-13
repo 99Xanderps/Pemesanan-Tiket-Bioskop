@@ -217,6 +217,9 @@ a {
     display: none;
 }
 
+.movie-scroller { cursor: grab; }                                              /* <- TAMBAHKAN di sini (baris 219) */
+.movie-scroller.dragging { cursor: grabbing; scroll-behavior: auto; user-select: none; }
+
 .movie-card {
     flex-shrink: 0;
     width: 140px;

@@ -4,6 +4,8 @@
 
 @section('content')
 
+@vite(['resources/css/app.css'])
+
     <div class="section" style="padding-top:16px;">
         <div class="poster-wrap" style="margin-bottom:14px;">
             <img src="{{ $movie->poster }}" alt="{{ $movie->title }}" style="width:100%; height:320px; object-fit:cover; border-radius: var(--radius);">
