@@ -6,74 +6,140 @@ use App\Models\Booking;
 use App\Models\Seat;
 use App\Models\Showtime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
-    // STEP 1: Tampilkan denah kursi untuk sebuah jadwal tayang
+    /**
+     * Baris kursi default kalau showtime belum pernah dibuatkan kursi.
+     */
+    private array $rows = ['A', 'B', 'C', 'D', 'E'];
+    private int $seatsPerRow = 8;
+
+    /**
+     * Halaman pilih kursi.
+     */
     public function seats(Showtime $showtime)
     {
         $showtime->load('movie', 'cinema');
 
-        // Jika kursi belum pernah dibuat untuk showtime ini, generate otomatis (5 baris x 8 kolom)
+        // Kalau showtime ini belum punya data kursi sama sekali, buatkan otomatis.
         if ($showtime->seats()->count() === 0) {
-            $rows = ['A', 'B', 'C', 'D', 'E'];
-            foreach ($rows as $row) {
-                for ($i = 1; $i <= 8; $i++) {
+            foreach ($this->rows as $row) {
+                for ($n = 1; $n <= $this->seatsPerRow; $n++) {
                     Seat::create([
                         'showtime_id' => $showtime->id,
-                        'seat_code'   => $row . $i,
+                        'seat_code'   => $row . $n,
+                        'is_booked'   => false,
                     ]);
                 }
             }
         }
 
-        $seats = $showtime->seats()->orderBy('seat_code')->get();
+        $seats = $showtime->seats()->orderBy('seat_code')->get()->groupBy(function ($seat) {
+            return substr($seat->seat_code, 0, 1); // kelompokkan per baris (A, B, C, ...)
+        });
 
         return view('booking.seats', compact('showtime', 'seats'));
     }
 
-    // STEP 2: Simpan pilihan kursi & data pemesan, buat booking baru
+    /**
+     * Simpan pemesanan dari kursi yang dipilih.
+     */
     public function store(Request $request, Showtime $showtime)
     {
         $validated = $request->validate([
-            'customer_name'  => 'required|string|max:255',
-            'customer_email' => 'required|email',
-            'seats'          => 'required|array|min:1',
-            'seats.*'        => 'exists:seats,id',
+            'seat_ids'       => ['required', 'array', 'min:1'],
+            'seat_ids.*'     => ['integer', 'exists:seats,id'],
+            'customer_name'  => ['required', 'string', 'max:255'],
+            'customer_email' => ['required', 'email', 'max:255'],
         ]);
 
-        $seats = Seat::whereIn('id', $validated['seats'])
+        // Ambil kursi yang benar-benar milik showtime ini dan belum dibooking siapapun.
+        $seats = Seat::whereIn('id', $validated['seat_ids'])
             ->where('showtime_id', $showtime->id)
             ->where('is_booked', false)
             ->get();
 
-        if ($seats->count() !== count($validated['seats'])) {
-            return back()->withErrors('Beberapa kursi yang dipilih sudah tidak tersedia. Silakan pilih ulang.');
+        if ($seats->count() !== count($validated['seat_ids'])) {
+            return back()
+                ->withErrors(['seat_ids' => 'Salah satu kursi yang kamu pilih ternyata sudah dibooking orang lain. Silakan pilih ulang.'])
+                ->withInput();
         }
 
-        $totalPrice = $showtime->price * $seats->count();
+        $totalPrice = $seats->count() * $showtime->price;
 
         $booking = Booking::create([
-            'showtime_id'    => $showtime->id,
-            'customer_name'  => $validated['customer_name'],
-            'customer_email' => $validated['customer_email'],
-            'total_price'    => $totalPrice,
-            'booking_code'   => strtoupper(Str::random(8)),
-            'status'         => 'pending',
+            'user_id'         => Auth::id(),
+            'showtime_id'     => $showtime->id,
+            'customer_name'   => $validated['customer_name'],
+            'customer_email'  => $validated['customer_email'],
+            'total_price'     => $totalPrice,
+            'booking_code'    => 'TKT-' . strtoupper(Str::random(8)),
+            'status'          => 'pending',
         ]);
 
         $booking->seats()->attach($seats->pluck('id'));
-        $seats->each->update(['is_booked' => true]);
 
-        return redirect()->route('booking.confirm', $booking)
-            ->with('success', 'Pemesanan berhasil dibuat!');
+        // Tandai kursi sebagai sudah dibooking (belum tentu dibayar, tapi supaya tidak direbut orang lain)
+        Seat::whereIn('id', $seats->pluck('id'))->update(['is_booked' => true]);
+
+        return redirect()->route('booking.pay', $booking);
     }
 
-    // STEP 3: Halaman konfirmasi/e-ticket
-    public function confirm(Booking $booking)
+    /**
+     * Halaman pembayaran (dummy/simulasi).
+     */
+    public function pay(Booking $booking)
     {
+        $this->authorizeOwner($booking);
+
+        if ($booking->status !== 'pending') {
+            return redirect()->route('booking.ticket', $booking);
+        }
+
         $booking->load('showtime.movie', 'showtime.cinema', 'seats');
-        return view('booking.confirm', compact('booking'));
+
+        return view('booking.pay', compact('booking'));
+    }
+
+    /**
+     * Proses konfirmasi pembayaran (simulasi — tidak benar-benar mengirim ke payment gateway).
+     */
+    public function confirmPay(Request $request, Booking $booking)
+    {
+        $this->authorizeOwner($booking);
+
+        $request->validate([
+            'metode' => ['required', 'in:transfer_bca,transfer_mandiri,ovo,gopay'],
+        ]);
+
+        if ($booking->status === 'pending') {
+            $booking->update(['status' => 'paid']);
+        }
+
+        return redirect()->route('booking.ticket', $booking)
+            ->with('success', 'Pembayaran berhasil! Tiketmu sudah siap.');
+    }
+
+    /**
+     * Halaman e-tiket.
+     */
+    public function ticket(Booking $booking)
+    {
+        $this->authorizeOwner($booking);
+
+        $booking->load('showtime.movie', 'showtime.cinema', 'seats');
+
+        return view('booking.ticket', compact('booking'));
+    }
+
+    /**
+     * Pastikan booking ini memang milik user yang sedang login.
+     */
+    private function authorizeOwner(Booking $booking): void
+    {
+        abort_unless($booking->user_id === Auth::id(), 403, 'Tiket ini bukan milikmu.');
     }
 }

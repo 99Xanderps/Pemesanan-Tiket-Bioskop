@@ -12,10 +12,23 @@ class Seat extends Model
     protected $fillable = [
         'showtime_id',
         'seat_code',
+        'is_booked',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_booked' => 'boolean',
+        ];
+    }
 
     public function showtime()
     {
         return $this->belongsTo(Showtime::class);
+    }
+
+    public function bookings()
+    {
+        return $this->belongsToMany(Booking::class, 'booking_seat');
     }
 }

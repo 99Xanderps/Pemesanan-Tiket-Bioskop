@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
-    // Menampilkan daftar semua film (halaman utama), bisa difilter berdasarkan jaringan bioskop
+    // Menampilkan daftar film yang SEDANG TAYANG (halaman utama), bisa difilter berdasarkan jaringan bioskop
     public function index(Request $request)
     {
         $chain = $request->query('chain'); // contoh: XXI, CGV, Cinepolis, FLIX
 
-        $query = Movie::latest();
+        // Hanya film yang punya minimal 1 jadwal tayang yang dianggap "Sedang Tayang".
+        // Film tanpa jadwal otomatis dianggap "Akan Tayang" (ditangani terpisah di view).
+        $query = Movie::whereHas('showtimes')->latest();
 
         if ($chain && $chain !== 'Semua Film') {
             $query->whereHas('showtimes.cinema', function ($q) use ($chain) {

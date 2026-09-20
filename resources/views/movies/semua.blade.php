@@ -6,7 +6,7 @@
 
     <div class="section">
         <div class="section-head">
-            <h4>🎬 Semua Film</h4>
+            <h4>Semua Film</h4>
         </div>
         <p class="section-sub">{{ $movies->count() }} film tersedia</p>
 
