@@ -4,18 +4,28 @@
 
 @section('content')
 
-    {{-- PROMO BANNER --}}
+    {{-- PROMO BANNER (informatif, sengaja tidak bisa diklik) --}}
     <div class="promo-banner">
         <div class="promo-eyebrow">PROMO HARI INI</div>
         <h3>Nonton hemat, cukup Rp25rb</h3>
-        <p>Berlaku untuk kelas Reguler, semua film 2D &amp; 3D, khusus hari ini.</p>
-        <a href="#" class="promo-cta">Beli di Sini</a>
+        <p>Kursi terbaik cepat habis. Amankan tempat dudukmu sebelum kehabisan.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
+            <span style="background-color:rgba(255,255,255,0.12); color:#ffd9dc; font-size:11.5px; font-weight:600; padding:6px 12px; border-radius:999px;">
+                ✓ Semua film 2D &amp; 3D
+            </span>
+            <span style="background-color:rgba(255,255,255,0.12); color:#ffd9dc; font-size:11.5px; font-weight:600; padding:6px 12px; border-radius:999px;">
+                ✓ Tanpa antre loket
+            </span>
+            <span style="background-color:rgba(255,255,255,0.12); color:#ffd9dc; font-size:11.5px; font-weight:600; padding:6px 12px; border-radius:999px;">
+                ✓ E-tiket langsung jadi
+            </span>
+        </div>
     </div>
 
     {{-- SEDANG TAYANG --}}
     <div class="section">
         <div class="section-head">
-            <h4>🎬 Sedang Tayang</h4>
+            <h4>Sedang Tayang</h4>
             <a href="{{ route('movies.all') }}" class="see-all">
                 Semua
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
@@ -51,15 +61,14 @@
 
     {{-- AKAN TAYANG --}}
     @php
-        // Sementara diambil langsung di sini berdasarkan judul.
-        // Idealnya nanti dipindah ke MovieController dan dikirim sebagai variabel terpisah,
-        // misalnya $comingSoon, supaya query tidak nangkring di view.
-        $comingSoon = \App\Models\Movie::whereIn('title', ['Gelombang Cherry', 'Musim'])->get();
+        // Film yang belum punya jadwal tayang sama sekali dianggap "Akan Tayang".
+        // Jadi cukup tambah film baru di tabel movies (tanpa showtime), otomatis muncul di sini.
+        $comingSoon = \App\Models\Movie::doesntHave('showtimes')->latest()->get();
     @endphp
 
     <div class="section">
         <div class="section-head">
-            <h4>⏳ Akan Tayang</h4>
+            <h4>Akan Tayang</h4>
             <a href="{{ route('movies.all') }}" class="see-all">
                 Semua
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">

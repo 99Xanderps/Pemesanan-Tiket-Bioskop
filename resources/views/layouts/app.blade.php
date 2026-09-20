@@ -12,30 +12,33 @@
 
     {{-- TOP BAR --}}
     <div class="topbar">
-        <div class="search-box">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <a href="{{ route('movies.index') }}" style="flex:1; display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--putih);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--merah)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="6" width="20" height="13" rx="2"/>
+                <path d="M2 10h20"/><path d="M7 6L5 3"/><path d="M12 6l-2-3"/><path d="M17 6l-2-3"/>
             </svg>
-            <span>Cari film, bioskop...</span>
-        </div>
-        <div class="icon-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
-                <path d="M21 19a2 2 0 0 1-2 2h-1v-8h3z"/>
-                <path d="M3 19a2 2 0 0 0 2 2h1v-8H3z"/>
-            </svg>
-        </div>
-        <a href="{{ auth()->check() ? route('logout') : route('login') }}"
-           @if(auth()->check()) onclick="event.preventDefault(); document.getElementById('logout-form').submit();" @endif
-           class="icon-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>
-            </svg>
+            <span style="font-size:19px; font-weight:800; letter-spacing:-0.3px;">
+                Bioskop<span style="color:var(--merah);">Ku</span>
+            </span>
         </a>
         @auth
+            <a href="{{ route('logout') }}"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+               class="icon-btn"
+               title="Login sebagai {{ auth()->user()->name }} — klik untuk logout"
+               style="background-color: var(--merah); border-color: var(--merah); color: var(--putih); font-weight: 800; font-size: 14px; position: relative;">
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                <span style="position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-radius:50%; background-color:#2ea043; border:2px solid var(--hitam);"></span>
+            </a>
             <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display:none;">
                 @csrf
             </form>
+        @else
+            <a href="{{ route('login') }}" class="icon-btn" title="Belum login — klik untuk masuk">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>
+                </svg>
+            </a>
         @endauth
     </div>
 
@@ -47,9 +50,9 @@
             </svg>
             SURABAYA
         </div>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-        </svg>
+        <span style="font-size:11.5px; color:var(--abu); font-weight:600; letter-spacing:0.3px;">
+            4 BIOSKOP TERSEDIA
+        </span>
     </div>
 
     {{-- FLASH MESSAGES --}}
@@ -75,14 +78,13 @@
             </svg>
             Beranda
         </a>
-        <a href="{{ route('movies.index') }}" class="nav-item {{ request()->routeIs('movies.show') ? 'active' : '' }}">
+        <a href="{{ route('cinemas.index') }}" class="nav-item {{ request()->routeIs('cinemas.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 4v5"/>
             </svg>
             Bioskop
         </a>
-        {{-- Belum ada route daftar tiket-saya, sementara arahkan ke login/beranda --}}
-        <a href="{{ auth()->check() ? route('movies.index') : route('login') }}" class="nav-item {{ request()->routeIs('booking.*') ? 'active' : '' }}">
+        <a href="{{ auth()->check() ? route('tickets.mine') : route('login') }}" class="nav-item {{ request()->routeIs('tickets.*') || request()->routeIs('booking.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4z"/>
             </svg>

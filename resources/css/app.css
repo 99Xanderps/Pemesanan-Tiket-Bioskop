@@ -453,3 +453,14 @@ a {
     border: 1px solid #6b1c1c;
     color: #ffc2c2;
 }
+
+button.seat {
+    font-family: inherit;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+button.seat:disabled {
+    opacity: 0.6;
+}
