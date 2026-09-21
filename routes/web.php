@@ -14,6 +14,9 @@ use App\Http\Controllers\Admin\AdminController;
 // ============================
 
 // Halaman Beranda (List Film)
+Route::get('/main', function () {
+    return redirect()->route('movies.index');
+});
 Route::get('/', [MovieController::class, 'index'])->name('movies.index');
 
 // Halaman Semua Film
@@ -74,4 +77,13 @@ Route::middleware('auth')->group(function () {
 
     // Halaman E-Tiket (butuh parameter ID/Code booking)
     Route::get('/booking/ticket/{booking}', [BookingController::class, 'ticket'])->name('booking.ticket');
+});
+use App\Http\Controllers\Auth\GoogleController;
+
+// Taruh berdiri sendiri di luar blok auth
+Route::post('/login-google', [GoogleController::class, 'handleCallback']);
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    // Atau bisa juga di dalam sini
 });

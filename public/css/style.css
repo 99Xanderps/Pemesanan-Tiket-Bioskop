@@ -450,3 +450,8 @@ a {
     border: 1px solid #6b1c1c;
     color: #ffc2c2;
 }
+.poster-wrap {
+    width: 100%;
+    height: auto;
+    display: block;
+}
