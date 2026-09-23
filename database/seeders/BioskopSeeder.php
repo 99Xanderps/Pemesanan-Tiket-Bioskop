@@ -23,35 +23,35 @@ class BioskopSeeder extends Seeder
         $movies = collect([
             Movie::create([
                 'title'    => 'Mr. Rey',
-                'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Mr.+Rey',
                 'genre'    => 'Adventure',
                 'duration' => 110,
                 'synopsis' => 'Cerita dan perjalanan dari mr rey.',
                 'rating'   => 'R13',
+                'poster' => 'pictures/mr-rey.jpeg',
             ]),
             Movie::create([
                 'title'    => 'Pencuri Uang',
-                'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Pencuri+Uang',
                 'genre'    => 'Crime',
                 'duration' => 105,
                 'synopsis' => 'Kisah tentang dua aksi pencuriang uang terbesar di spanyol.',
                 'rating'   => 'D17',
+                'poster' => 'pictures/pencuri-uang.jpeg',
             ]),
             Movie::create([
                 'title'    => 'Sleepy Boys',
-                'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Sleepy+Boys',
                 'genre'    => 'Drama',
                 'duration' => 110,
                 'synopsis' => 'Seorang pelajar yang tertidur di kelas karena habis begadang koding semalaman.',
                 'rating'   => 'R13',
+                'poster' => 'pictures/sleepy-boys.jpeg',
             ]),
             Movie::create([
                 'title'    => '500 Hari Di Musim Panas',
-                'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Musim+Panas',
                 'genre'    => 'Romance',
                 'duration' => 102,
                 'synopsis' => '500 hari buat buang buang waktu mending tidur.',
                 'rating'   => 'SU',
+                'poster' => 'pictures/musim-panas.jpeg',
             ]),
         ]);
 
@@ -89,11 +89,11 @@ class BioskopSeeder extends Seeder
         // ---------- Film yang AKAN TAYANG (JANGAN taruh di $movies atas — sengaja tanpa jadwal) ----------
         Movie::create([
             'title'    => 'Manusia Setengah Raja Iblis',
-            'poster'   => 'https://placehold.co/300x450/1a0000/ffffff?text=Manusia+Setengah+Raja+Iblis',
             'genre'    => 'Fantasy, Komedi',
             'duration' => 105,
             'synopsis' => 'Seorang manusia setengah raja iblis merasa bahwa dunia  hanyalah alat.',
             'rating'   => 'SU',
+            'poster' => 'pictures/manusia-setengah-raja-iblis.jpeg',
         ]);
     }
 }

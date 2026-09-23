@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\MoviePosterController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Auth\GoogleController;
 
 // ============================
 // HALAMAN PUBLIK (film & beranda)
@@ -36,8 +37,8 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+   // Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    //Route::post('/login', [AuthController::class, 'login']);
 });
 
 // ============================
@@ -78,12 +79,12 @@ Route::middleware('auth')->group(function () {
     // Halaman E-Tiket (butuh parameter ID/Code booking)
     Route::get('/booking/ticket/{booking}', [BookingController::class, 'ticket'])->name('booking.ticket');
 });
-use App\Http\Controllers\Auth\GoogleController;
 
-// Taruh berdiri sendiri di luar blok auth
-Route::post('/login-google', [GoogleController::class, 'handleCallback']);
 
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    // Atau bisa juga di dalam sini
-});
+// 1. Menampilkan halaman login
+Route::get('/login', function () {
+    return view('auth.login'); 
+})->name('login');
+
+// 2. Memproses token Google secara rahasia di latar belakang
+Route::post('/login-google', [\App\Http\Controllers\Auth\GoogleController::class, 'handleCallback']);

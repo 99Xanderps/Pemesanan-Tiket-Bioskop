@@ -8,13 +8,13 @@
 
     <div class="section" style="padding-top:16px;">
         <div class="poster-wrap" style="margin-bottom:14px;">
-            <img src="{{ $movie->poster }}" alt="{{ $movie->title }}" style="width:100%; height:320px; object-fit:cover; border-radius: var(--radius);">
-            <span class="rating-tag">{{ $movie->rating }}</span>
+            <img src="{{ asset($movie-> poster) }}" alt="{{ $movie-> title }}" style="width:100%; height:320px; object-fit:cover; border-radius: var(--radius);">
+            <span class="rating-tag">{{ $movie-> rating }}</span>
         </div>
 
-        <h2 style="color: var(--merah); margin: 0 0 4px; font-size:22px;">{{ $movie->title }}</h2>
-        <p class="section-sub" style="margin-bottom:12px;">{{ $movie->genre }} &middot; {{ $movie->duration }} menit</p>
-        <p style="line-height:1.5; color:#dcdcdc;">{{ $movie->synopsis }}</p>
+        <h2 style="color: var(--merah); margin: 0 0 4px; font-size:22px;">{{ $movie-> title }}</h2>
+        <p class="section-sub" style="margin-bottom:12px;">{{ $movie-> genre }} &middot; {{ $movie-> duration }} menit</p>
+        <p style="line-height:1.5; color:#dcdcdc;">{{ $movie-> synopsis }}</p>
 
         <div style="border-top:1px solid #222; margin: 18px 0;"></div>
 

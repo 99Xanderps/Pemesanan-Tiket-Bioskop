@@ -63,9 +63,7 @@
             <div class="section-head">
                 <h4>Menu</h4>
             </div>
-            <a href="{{ route('admin.movies.index') }}" class="panel" style="display:block; text-decoration:none; color:inherit; margin-bottom:10px;">
-                Kelola Poster Film
-            </a>
+            
             <a href="{{ route('movies.index') }}" class="panel" style="display:block; text-decoration:none; color:inherit;">
                 Lihat Website
             </a>

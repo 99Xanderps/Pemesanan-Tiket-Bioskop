@@ -44,14 +44,14 @@
         </div>
 
         <div class="movie-scroller">
-            @forelse ($movies as $movie)
-                <a href="{{ route('movies.show', $movie) }}" class="movie-card">
+            @forelse ($movies as $mov)
+                <a href="{{ route('movies.show', $mov) }}" class="movie-card">
                     <div class="poster-wrap">
-                        <img src="{{ $movie->poster }}" alt="{{ $movie->title }}">
-                        <span class="rating-tag">{{ $movie->rating }}</span>
+                        <img src="{{ $mov -> poster }}" alt="{{ $mov -> title }}">
+                        <span class="rating-tag">{{ $mov -> rating }}</span>
                     </div>
-                    <div class="title">{{ $movie->title }}</div>
-                    <div class="meta">{{ $movie->genre }} &middot; {{ $movie->duration }} mnt</div>
+                    <div class="title">{{ $mov -> title }}</div>
+                    <div class="meta">{{ $mov -> genre }} &middot; {{ $mov -> duration }} mnt</div>
                 </a>
             @empty
                 <p class="section-sub">Belum ada film untuk filter ini.</p>

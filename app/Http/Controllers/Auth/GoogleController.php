@@ -7,6 +7,7 @@ use Kreait\Laravel\Firebase\Facades\Firebase;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
 
 class GoogleController extends Controller
 {
